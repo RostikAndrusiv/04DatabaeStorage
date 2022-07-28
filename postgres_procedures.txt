@@ -3,6 +3,21 @@ create table db_entity(
 	file_name varchar(45) DEFAULT NULL,
 	file_binary bytea
 	)
+	
+	delete from db_entity where file_id >1
+	
+	select * from db_entity
+	
+	
+	select * from db_entity where file_name  = ?
+
+	
+CREATE PROCEDURE insert_data(f_name varchar, f_binary bytea)
+LANGUAGE SQL
+AS $$
+INSERT INTO db_entity(file_name, file_binary) VALUES (f_name, f_binary);
+$$;
+
 
 drop function findFileByName
 create or replace function findFileByName(varchar)
@@ -15,10 +30,4 @@ return query
 select * from db_entity	where db_entity.file_name = $1;
 end;
 $$ LANGUAGE plpgsql;
-
-CREATE PROCEDURE insert_data(f_name varchar, f_binary bytea)
-LANGUAGE SQL
-AS $$
-INSERT INTO db_entity(file_name, file_binary) VALUES (f_name, f_binary);
-$$;
 

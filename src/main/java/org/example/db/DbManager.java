@@ -16,8 +16,9 @@ import java.util.Properties;
 public class DbManager {
     private static DbManager instance = null;
 
-    private static final String DB_URL = loadURL();
+//    private static final String DB_URL = loadURL();
 
+    private static final String DB_URL = "jdbc:postgresql://localhost:5433/postgres?user=postgres&password=admin";
     private DbManager() {
     }
 
