@@ -62,18 +62,18 @@ public class DaoImpl {
         }
     }
 
-    public void createInsertDataProcedure(){
+    public void createInsertDataProcedure() {
         execute(CREATE_PROCEDURE_SQL);
     }
 
-    public void dropInsertDataProcedure(){
+    public void dropInsertDataProcedure() {
         execute(DROP_PROCEDURE_SQL);
     }
 
     private void execute(String sql) {
         try (Connection connection = dbManager.getConnection();
              Statement stmt = connection.createStatement()) {
-           stmt.executeQuery(sql);
+            stmt.executeQuery(sql);
         } catch (SQLException e) {
             log.info(e.getMessage());
         }

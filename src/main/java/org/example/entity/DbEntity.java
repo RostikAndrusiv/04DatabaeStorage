@@ -4,9 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.postgresql.jdbc.PgBlob;
-
-import java.sql.Blob;
 
 @Data
 @Builder
@@ -19,6 +16,5 @@ public class DbEntity {
     String name;
 
     byte[] content;
-
 
 }

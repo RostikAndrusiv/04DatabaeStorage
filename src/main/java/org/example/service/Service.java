@@ -16,7 +16,7 @@ import java.util.Optional;
 @Slf4j
 public class Service {
 
-    private static final int maxSize = 200*1024*1024;
+    private static final int maxSize = 200 * 1024 * 1024;
 
     private final DaoImpl dao = new DaoImpl();
 
@@ -72,11 +72,11 @@ public class Service {
 //        }
 //    }
 
-    public void createInsertProcedure(){
+    public void createInsertProcedure() {
         dao.createInsertDataProcedure();
     }
 
-    public void dropInsertProcedure(){
+    public void dropInsertProcedure() {
         dao.dropInsertDataProcedure();
     }
 
@@ -87,11 +87,11 @@ public class Service {
             byte[] buffer = new byte[1024];
 
             for (int len = is.read(buffer); len != -1; len = is.read(buffer)) {
-                if(maxSize<size){
+                if (maxSize < size) {
                     throw new FileSizeException();
                 }
                 os.write(buffer, 0, len);
-                size = size+buffer.length;
+                size = size + buffer.length;
             }
 
             byte[] bytes = os.toByteArray();
@@ -107,11 +107,10 @@ public class Service {
     }
 
 
-    private static String getFileName(String location){
+    private static String getFileName(String location) {
         String[] split = location.split("/");
-        return split[split.length-1];
+        return split[split.length - 1];
     }
-
 
 
 }
