@@ -8,10 +8,7 @@ import org.example.exception.FileNotFoundException;
 import org.example.exception.FileSizeException;
 import org.example.exception.PathNotValidException;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.Objects;
 import java.util.Optional;
@@ -19,7 +16,7 @@ import java.util.Optional;
 @Slf4j
 public class Service {
 
-    private static final int maxSize = 209715200;
+    private static final int maxSize = 200*1024*1024;
 
     private final DaoImpl dao = new DaoImpl();
 
@@ -56,21 +53,53 @@ public class Service {
         }
     }
 
-    private Optional<DbEntity> readFile(String location) {
-        try (InputStream fis = new FileInputStream(location)) {
-            var file = new File(location);
-            var content = Files.readAllBytes(file.toPath());
-            if (maxSize < content.length) {
-                throw new FileSizeException();
+    // may cause outOfMemory, checks size after entire file is read
+//    private Optional<DbEntity> readFile1(String location) {
+//        try {
+//            var file = new File(location);
+//            var content = Files.readAllBytes(file.toPath());
+//            if (maxSize < content.length) {
+//                throw new FileSizeException();
+//            }
+//            var entityToSave = DbEntity.builder()
+//                    .name(file.getName())
+//                    .content(Files.readAllBytes(file.toPath()))
+//                    .build();
+//            return Optional.of(entityToSave);
+//        } catch (IOException e) {
+//            log.info(e.getMessage());
+//            return Optional.empty();
+//        }
+//    }
+
+    public static Optional<DbEntity> readFile(String location) {
+        try (InputStream is = new FileInputStream(location);
+             ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+            int size = 0;
+            byte[] buffer = new byte[1024];
+
+            for (int len = is.read(buffer); len != -1; len = is.read(buffer)) {
+                if(maxSize<size){
+                    throw new FileSizeException();
+                }
+                os.write(buffer, 0, len);
+                size = size+buffer.length;
             }
+
+            byte[] bytes = os.toByteArray();
             var entityToSave = DbEntity.builder()
-                    .name(file.getName())
-                    .content(Files.readAllBytes(file.toPath()))
+                    .name(getFileName(location))
+                    .content(bytes)
                     .build();
             return Optional.of(entityToSave);
         } catch (IOException e) {
             log.info(e.getMessage());
             return Optional.empty();
         }
+    }
+
+    public static String getFileName(String location){
+        String[] split = location.split("/");
+        return split[split.length-1];
     }
 }

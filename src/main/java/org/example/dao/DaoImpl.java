@@ -16,19 +16,21 @@ import java.util.Optional;
 public class DaoImpl {
 
     private static final String EXCEPTION_MESSAGE = "SQL Exception: %s";
-    private static final String SQL_SAVE = "insert into db_entity (file_name, file_binary) values (?,?)";
-    private static final String SQL_PROCEDURE_SAVE = "{call insert_data(?, ?)}";
+    private static final String SQL_PROCEDURE_SAVE = "call insert_data(?, ?)";
     private static final String SQL_PROCEDURE_FIND = "select * from findFileByName(?)";
-    private static final String SQL_DELETE = "DELETE FROM db_entity WHERE file_name = ?";
+    private static final String eeee = "CREATE PROCEDURE `retrieveData`() " +
+            "BEGIN "+
+            " SELECT * FROM Customers; "+
+            "END";
 
     DbManager dbManager = DbManager.getInstance();
 
     public boolean save(DbEntity entity) {
         try (Connection connection = dbManager.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(SQL_SAVE, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, entity.getName());
-            preparedStatement.setBytes(2, entity.getContent());
-            preparedStatement.executeUpdate();
+             CallableStatement cstmt = connection.prepareCall(SQL_PROCEDURE_SAVE)) {
+            cstmt.setString(1, entity.getName());
+            cstmt.setBytes(2, entity.getContent());
+            cstmt.executeUpdate();
             return true;
 
         } catch (SQLException e) {
@@ -53,12 +55,19 @@ public class DaoImpl {
         }
     }
 
-    public void delete(String name) {
+    public void createInsertProcedure(String sql) {
         try (Connection connection = dbManager.getConnection();
-             PreparedStatement pst = connection.prepareStatement(SQL_DELETE);
-        ) {
-            pst.setString(1, name);
-            pst.execute();
+             Statement stmt = connection.createStatement()) {
+           stmt.executeQuery(sql);
+        } catch (SQLException e) {
+            log.info(e.getMessage());
+        }
+    }
+
+    public void dropProcedure(String sql) {
+        try (Connection connection = dbManager.getConnection();
+             Statement stmt = connection.createStatement()) {
+            stmt.executeQuery(sql);
         } catch (SQLException e) {
             log.info(e.getMessage());
         }

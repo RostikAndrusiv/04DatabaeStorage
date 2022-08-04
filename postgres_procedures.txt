@@ -18,8 +18,6 @@ AS $$
 INSERT INTO db_entity(file_name, file_binary) VALUES (f_name, f_binary);
 $$;
 
-
-drop function findFileByName
 create or replace function findFileByName(varchar)
   returns table (file_id   int, 
                  file_name varchar,
