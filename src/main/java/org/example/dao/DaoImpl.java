@@ -16,12 +16,19 @@ import java.util.Optional;
 public class DaoImpl {
 
     private static final String EXCEPTION_MESSAGE = "SQL Exception: %s";
+
     private static final String SQL_PROCEDURE_SAVE = "call insert_data(?, ?)";
+
     private static final String SQL_PROCEDURE_FIND = "select * from findFileByName(?)";
-    private static final String eeee = "CREATE PROCEDURE `retrieveData`() " +
-            "BEGIN "+
-            " SELECT * FROM Customers; "+
-            "END";
+
+    private static final String DROP_PROCEDURE_SQL = "DROP PROCEDURE insert_data";
+
+    private static final String CREATE_PROCEDURE_SQL = "CREATE PROCEDURE insert_data(f_name varchar, f_binary bytea) " +
+            "LANGUAGE SQL " +
+            "AS $$ " +
+            "INSERT INTO db_entity(file_name, file_binary) " +
+            "VALUES (f_name, f_binary); " +
+            "$$";
 
     DbManager dbManager = DbManager.getInstance();
 
@@ -55,19 +62,18 @@ public class DaoImpl {
         }
     }
 
-    public void createInsertProcedure(String sql) {
+    public void createInsertDataProcedure(){
+        execute(CREATE_PROCEDURE_SQL);
+    }
+
+    public void dropInsertDataProcedure(){
+        execute(DROP_PROCEDURE_SQL);
+    }
+
+    private void execute(String sql) {
         try (Connection connection = dbManager.getConnection();
              Statement stmt = connection.createStatement()) {
            stmt.executeQuery(sql);
-        } catch (SQLException e) {
-            log.info(e.getMessage());
-        }
-    }
-
-    public void dropProcedure(String sql) {
-        try (Connection connection = dbManager.getConnection();
-             Statement stmt = connection.createStatement()) {
-            stmt.executeQuery(sql);
         } catch (SQLException e) {
             log.info(e.getMessage());
         }

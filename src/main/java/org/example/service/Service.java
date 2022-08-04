@@ -72,7 +72,15 @@ public class Service {
 //        }
 //    }
 
-    public static Optional<DbEntity> readFile(String location) {
+    public void createInsertProcedure(){
+        dao.createInsertDataProcedure();
+    }
+
+    public void dropInsertProcedure(){
+        dao.dropInsertDataProcedure();
+    }
+
+    private static Optional<DbEntity> readFile(String location) {
         try (InputStream is = new FileInputStream(location);
              ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             int size = 0;
@@ -98,8 +106,12 @@ public class Service {
         }
     }
 
-    public static String getFileName(String location){
+
+    private static String getFileName(String location){
         String[] split = location.split("/");
         return split[split.length-1];
     }
+
+
+
 }
